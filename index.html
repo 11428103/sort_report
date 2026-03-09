@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>氣泡排序法</title>
+	<style>
+		/* 背景與整體樣式 */
+		body {
+			font-family: Arial, sans-serif;
+			background-color: #FFF8E1; /* 暖黃色背景 */
+			color: #5D4037; /* 深棕色文字 */
+			margin: 0;
+			padding: 0;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			height: 100vh;
+			overflow: hidden; /* 防止滾動條 */
+		}
+
+		/* 背景泡泡效果 */
+		body::before, body::after {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background-image: radial-gradient(circle, rgba(255, 255, 255, 0.8) 15%, transparent 70%);
+			background-repeat: repeat;
+			background-size: 80px 80px; /* 調整泡泡大小 */
+			animation: moveBubbles 8s infinite linear; /* 加快動畫速度 */
+			pointer-events: none; /* 防止影響互動 */
+		}
+
+		body::after {
+			animation-delay: 4s; /* 調整延遲 */
+			background-size: 120px 120px; /* 調整第二層泡泡大小 */
+		}
+
+		@keyframes moveBubbles {
+			0% {
+				transform: translateY(0);
+			}
+			100% {
+				transform: translateY(-120%); /* 增加移動距離 */
+			}
+		}
+
+		/* 容器樣式 */
+		.container {
+			background-color: #FFECB3; /* 較淺的暖黃色容器 */
+			border-radius: 10px;
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+			padding: 20px 30px;
+			text-align: center;
+			max-width: 400px;
+			width: 100%;
+			z-index: 1; /* 確保內容在泡泡之上 */
+		}
+
+		/* 標題樣式 */
+		h1 {
+			font-size: 24px;
+			margin-bottom: 20px;
+		}
+
+		/* 輸入框與按鈕樣式 */
+		input {
+			width: calc(100% - 20px);
+			padding: 10px;
+			margin-bottom: 15px;
+			border: 1px solid #D7CCC8;
+			border-radius: 5px;
+			font-size: 16px;
+		}
+
+		button {
+			background-color: #FFB74D; /* 橙黃色按鈕 */
+			color: white;
+			border: none;
+			border-radius: 5px;
+			padding: 10px 20px;
+			font-size: 16px;
+			cursor: pointer;
+			transition: background-color 0.3s;
+		}
+
+		button:hover {
+			background-color: #FF9800; /* 按鈕懸停效果 */
+		}
+
+		/* 結果區域樣式 */
+		.result {
+			margin-top: 20px;
+			font-size: 16px;
+		}
+
+		.result span {
+			font-weight: bold;
+			color: #795548; /* 深棕色 */
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<h1>氣泡排序法</h1>
+		<p>請輸入數字，以逗號分隔：</p>
+		<input type="text" id="numbers" placeholder="例如：5,3,8,6,2">
+		<button onclick="sortNumbers()">排序</button>
+		<div class="result">
+			<p>排序前：<span id="beforeSort"></span></p>
+			<p>排序後：<span id="afterSort"></span></p>
+		</div>
+	</div>
+
+	<script>
+		function sortNumbers() {
+			// 取得使用者輸入
+			const input = document.getElementById('numbers').value;
+			const array = input.split(',').map(Number); // 將輸入轉換為數字陣列
+
+			// 顯示排序前的陣列
+			document.getElementById('beforeSort').textContent = array.join(', ');
+
+			// 氣泡排序法實現
+			for (let i = 0; i < array.length - 1; i++) {
+				for (let j = 0; j < array.length - i - 1; j++) {
+					if (array[j] > array[j + 1]) {
+						// 交換元素
+						const temp = array[j];
+						array[j] = array[j + 1];
+						array[j + 1] = temp;
+					}
+				}
+			}
+
+			// 顯示排序後的陣列
+			document.getElementById('afterSort').textContent = array.join(', ');
+		}
+	</script>
+</body>
+</html>
