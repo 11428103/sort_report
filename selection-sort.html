@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>選擇排序法</title>
+    <style>
+        /* 背景與整體樣式 */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #E3F2FD; /* 淺藍色背景 */
+            color: #0D47A1; /* 深藍色文字 */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* 背景水波效果 */
+        body::before, body::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(circle, rgba(255, 255, 255, 0.8) 10%, transparent 70%);
+            background-repeat: repeat;
+            background-size: 100px 100px;
+            animation: moveWaves 10s infinite linear;
+            pointer-events: none;
+        }
+
+        body::after {
+            animation-delay: 5s;
+            background-size: 140px 140px;
+        }
+
+        @keyframes moveWaves {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-110%); }
+        }
+
+        /* 容器樣式 */
+        .container {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+            padding: 24px 32px;
+            text-align: center;
+            max-width: 460px;
+            width: 100%;
+            z-index: 1;
+        }
+
+        /* 標題樣式 */
+        h1 {
+            font-size: 26px;
+            margin-bottom: 18px;
+        }
+
+        .info {
+            text-align: left;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 18px;
+            color: #0D47A1;
+        }
+
+        .info strong {
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        /* 輸入框與按鈕樣式 */
+        input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 14px;
+            border: 1px solid #90CAF9;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #1E88E5;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 22px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #1565C0;
+        }
+
+        /* 視覺化條列 */
+        .bars {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            height: 170px;
+            margin-top: 18px;
+            gap: 6px;
+        }
+
+        .bar {
+            width: 22px;
+            background-color: #64B5F6;
+            border-radius: 6px 6px 0 0;
+            position: relative;
+            transition: background-color 0.2s, height 0.2s;
+        }
+
+        .bar span {
+            position: absolute;
+            bottom: -20px;
+            width: 100%;
+            font-size: 12px;
+            text-align: center;
+            color: #0D47A1;
+        }
+
+        .bar.highlight {
+            background-color: #FFB74D;
+        }
+
+        .bar.min {
+            background-color: #F57C00;
+        }
+
+        .bar.sorted {
+            background-color: #81C784;
+        }
+
+        .step {
+            margin-top: 12px;
+            font-size: 14px;
+            min-height: 28px;
+            color: #0D47A1;
+        }
+
+        .random-numbers {
+            margin-top: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #0D47A1;
+        }
+
+        /* 結果區域樣式 */
+        .result {
+            margin-top: 18px;
+            font-size: 16px;
+        }
+
+        .result span {
+            font-weight: bold;
+            color: #0D47A1;
+        }
+
+        /* 返回首頁連結樣式 */
+        .back-link {
+            display: block;
+            margin-top: 24px;
+            text-align: center;
+        }
+
+        .back-link a {
+            color: #1E88E5;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .back-link a:hover {
+            color: #1565C0;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>選擇排序法</h1>
+        <div class="info">
+            <strong>排序規則</strong>
+            將未排序區間的最小值找出，並與該區間的第一個元素交換；重複此步驟直到所有元素排序完成。
+            <br><br>
+            <strong>示意步驟</strong>
+            1) 從第 1 個元素開始設定最小值<br>
+            2) 比較未排序元素，找到更小值時更新最小索引<br>
+            3) 將最小值交換到目前位置
+        </div>
+
+        <p>選擇要生成幾個數字（1-8）：</p>
+        <input type="number" id="numCount" min="1" max="8" value="8" style="width: 60px; margin-right: 10px;">
+        <button onclick="generateRandomNumbers()">生成隨機數字</button>
+
+        <div class="random-numbers" id="randomNumbers"></div>
+
+        <div class="bars" id="bars"></div>
+        <div class="step" id="stepInfo"></div>
+
+        <div class="result">
+            <p>排序前：<span id="beforeSort"></span></p>
+            <p>排序後：<span id="afterSort"></span></p>
+        </div>
+        <div class="back-link">
+            <a href="index.html">← 返回首頁</a>
+        </div>
+    </div>
+
+    <script>
+        const ANIMATION_DELAY = 360;
+        let currentNumbers = [];
+
+        function generateRandomNumbers() {
+            const count = parseInt(document.getElementById('numCount').value);
+            if (isNaN(count) || count < 1 || count > 8) {
+                alert('請輸入 1 到 8 之間的數字');
+                return;
+            }
+            currentNumbers = [];
+            for (let i = 0; i < count; i++) {
+                currentNumbers.push(Math.floor(Math.random() * 99) + 1); // 1-99
+            }
+            document.getElementById('randomNumbers').textContent = '生成的數字：' + currentNumbers.join(', ');
+            sortNumbers();
+        }
+
+        function parseInput() {
+            if (currentNumbers.length === 0) {
+                alert('請先點擊「生成隨機數字」');
+                return null;
+            }
+            return currentNumbers;
+        }
+
+        function renderBars(array, highlights = {}, sorted = []) {
+            const container = document.getElementById('bars');
+            container.innerHTML = '';
+
+            const max = Math.max(...array, 1);
+
+            array.forEach((value, index) => {
+                const bar = document.createElement('div');
+                bar.className = 'bar';
+                bar.style.height = `${(value / max) * 140 + 20}px`;
+
+                if (sorted.includes(index)) bar.classList.add('sorted');
+                if (index === highlights.current) bar.classList.add('highlight');
+                if (index === highlights.min) bar.classList.add('min');
+
+                const label = document.createElement('span');
+                label.textContent = value;
+                bar.appendChild(label);
+
+                container.appendChild(bar);
+            });
+        }
+
+        function generateSelectionSteps(original) {
+            const a = original.slice();
+            const steps = [];
+
+            const markSorted = idx => Array.from({ length: idx + 1 }, (_, i) => i);
+
+            for (let i = 0; i < a.length - 1; i++) {
+                let minIndex = i;
+                steps.push({
+                    arr: a.slice(),
+                    highlights: { current: i, min: minIndex },
+                    sorted: markSorted(i - 1),
+                    text: `正在處理位置 ${i + 1}，目前最小值位置：${minIndex + 1}`
+                });
+
+                for (let j = i + 1; j < a.length; j++) {
+                    steps.push({
+                        arr: a.slice(),
+                        highlights: { current: j, min: minIndex },
+                        sorted: markSorted(i - 1),
+                        text: `比較第 ${j + 1} 個元素（值 ${a[j]}）與目前最小值（值 ${a[minIndex]}）`
+                    });
+
+                    if (a[j] < a[minIndex]) {
+                        minIndex = j;
+                        steps.push({
+                            arr: a.slice(),
+                            highlights: { current: j, min: minIndex },
+                            sorted: markSorted(i - 1),
+                            text: `找到更小值：第 ${j + 1} 個元素，更新最小索引`
+                        });
+                    }
+                }
+
+                if (minIndex !== i) {
+                    [a[i], a[minIndex]] = [a[minIndex], a[i]];
+                    steps.push({
+                        arr: a.slice(),
+                        highlights: { current: i, min: minIndex },
+                        sorted: markSorted(i),
+                        text: `交換第 ${i + 1} 個元素與第 ${minIndex + 1} 個元素` 
+                    });
+                }
+
+                steps.push({
+                    arr: a.slice(),
+                    highlights: {},
+                    sorted: markSorted(i),
+                    text: `第 ${i + 1} 輪結束：第 ${i + 1} 個位置正確` 
+                });
+            }
+
+            steps.push({
+                arr: a.slice(),
+                highlights: {},
+                sorted: Array.from({ length: a.length }, (_, i) => i),
+                text: '排序完成！'
+            });
+
+            return steps;
+        }
+
+        function animateSteps(steps) {
+            let index = 0;
+            const stepInfo = document.getElementById('stepInfo');
+
+            function next() {
+                if (index >= steps.length) return;
+                const step = steps[index++];
+
+                renderBars(step.arr, step.highlights, step.sorted);
+                stepInfo.textContent = step.text;
+
+                if (index < steps.length) {
+                    setTimeout(next, ANIMATION_DELAY);
+                }
+            }
+
+            next();
+        }
+
+        function sortNumbers() {
+            const nums = parseInput();
+            if (!nums) return;
+
+            document.getElementById('beforeSort').textContent = nums.join(', ');
+            document.getElementById('afterSort').textContent = '';
+
+            const steps = generateSelectionSteps(nums);
+            animateSteps(steps);
+
+            const sorted = nums.slice().sort((a, b) => a - b);
+            setTimeout(() => {
+                document.getElementById('afterSort').textContent = sorted.join(', ');
+            }, ANIMATION_DELAY * (steps.length + 1));
+        }
+    </script>
+</body>
+</html>
