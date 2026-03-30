@@ -3,23 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>快速排序法 - 深灰星空版</title>
+    <title>快速排序法 - 淺灰優化版</title>
     <style>
-        /* 背景與整體樣式 - 深灰系 */
+        /* 背景與整體樣式 - 淺灰色系 */
         body {
             font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #121212 0%, #1A1A1A 50%, #212121 100%);
-            color: #E0E0E0; /* 淺灰色文字 */
+            background: linear-gradient(135deg, #F5F5F5 0%, #E0E0E0 50%, #BDBDBD 100%);
+            color: #424242; /* 深灰文字 */
             margin: 0; padding: 0;
             display: flex; justify-content: center; align-items: center;
             height: 100vh; overflow: hidden;
             position: relative;
         }
 
-        /* 移植：背景上升泡泡效果 (調整為深灰系半透明) */
+        /* 移植：背景上升泡泡效果 */
         body::before, body::after {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: radial-gradient(circle, rgba(200, 200, 200, 0.2) 15%, transparent 70%);
+            background-image: radial-gradient(circle, rgba(255, 255, 255, 0.8) 15%, transparent 70%);
             background-repeat: repeat; background-size: 80px 80px;
             animation: moveBubbles 8s infinite linear; pointer-events: none; z-index: 0;
         }
@@ -28,9 +28,9 @@
 
         /* 容器樣式 */
         .container {
-            background-color: rgba(33, 33, 33, 0.95); /* 半透明深灰容器 */
+            background-color: rgba(255, 255, 255, 0.95); /* 白色半透明容器 */
             border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             padding: 25px 35px;
             text-align: center;
             max-width: 480px;
@@ -41,7 +41,7 @@
             position: relative;
         }
 
-        h1 { font-size: 26px; margin-bottom: 15px; margin-top: 0; color: #F5F5F5; }
+        h1 { font-size: 26px; margin-bottom: 15px; margin-top: 0; color: #212121; }
 
         /* --- 排序規則與步驟區塊 --- */
         .info {
@@ -49,29 +49,28 @@
             font-size: 14px;
             line-height: 1.5;
             margin-bottom: 20px;
-            background: rgba(66, 66, 66, 0.5);
+            background: rgba(238, 238, 238, 0.7);
             padding: 12px;
             border-radius: 8px;
-            color: #B0BEC5;
+            color: #616161;
         }
-        .info strong { display: block; margin-bottom: 4px; color: #F5F5F5; }
+        .info strong { display: block; margin-bottom: 4px; color: #212121; }
 
         /* 控制項 */
         .controls { margin-bottom: 15px; }
         input {
-            width: 50px; padding: 8px; border: 1px solid #444;
+            width: 50px; padding: 8px; border: 1px solid #BDBDBD;
             border-radius: 5px; font-size: 16px; text-align: center;
-            background-color: #333; color: white;
         }
         button {
-            background: linear-gradient(135deg, #424242, #212121); color: white; border: none;
+            background-color: #757575; color: white; border: none;
             border-radius: 5px; padding: 8px 15px; font-size: 16px;
-            cursor: pointer; transition: 0.3s; margin-left: 5px;
+            cursor: pointer; transition: 0.3s;
         }
-        button:hover { background: linear-gradient(135deg, #616161, #424242); }
-        button:disabled { background: #546e7a; cursor: not-allowed; }
+        button:hover { background-color: #424242; }
+        button:disabled { background-color: #BDBDBD; cursor: not-allowed; }
 
-        .random-numbers { margin-bottom: 15px; font-weight: bold; color: #9E9E9E; }
+        .random-numbers { margin-bottom: 15px; font-weight: bold; color: #757575; }
 
         /* --- 視覺化排版：長條圖在上 --- */
         .bars {
@@ -79,43 +78,42 @@
             height: 160px; margin: 10px 0; gap: 8px;
         }
         .bar {
-            width: 28px; background-color: #888; /* 預設銀灰色長條 */
+            width: 28px; background-color: #9E9E9E; /* 預設灰色長條 */
             border-radius: 5px 5px 0 0; position: relative;
             transition: height 0.3s ease, background-color 0.2s;
         }
         .bar span {
-            position: absolute; bottom: -25px; width: 100%;
-            font-size: 14px; text-align: center; font-weight: bold;
-            color: #F5F5F5;
+            position: absolute; bottom: -22px; width: 100%;
+            font-size: 12px; text-align: center; font-weight: bold;
+            color: #424242;
         }
 
-        /* 狀態顏色 - 對比鮮明 */
-        .bar.pivot { background-color: #EF5350; }    /* 紅色：基準值 (Pivot) */
-        .bar.compare { background-color: #40C4FF; }  /* 藍色：目前掃描元素 (j) */
-        .bar.swap { background-color: #FFD600; }     /* 黃色：交換位置 (i/j) */
-        .bar.pivotPlacement { background-color: #FFFF00; box-shadow: 0 0 10px #FFFF00; } /* 閃爍黃：基準值最終擺放 */
-        .bar.sorted { background-color: #66BB6A; }   /* 綠色：已排序完成 */
+        /* 狀態顏色 */
+        .bar.pivot { background-color: #EF5350; }    /* 紅色：基準值 */
+        .bar.compare { background-color: #42A5F5; }  /* 藍色：正在掃描 */
+        .bar.swap { background-color: #FFCA28; }     /* 黃色：交換中 */
+        .bar.sorted { background-color: #66BB6A; }   /* 綠色：已排序 */
 
-        /* --- 核心排版：說明文字在下（加大、置中、醒目紅） --- */
+        /* --- 核心排版：說明文字在下（加大、置中、深橘紅） --- */
         .step {
             margin: 30px 0 15px 0;
             font-size: 20px;
             font-weight: bold;
-            color: #FF1744; /* 超醒目紅色，符合你的標註標準 */
+            color: #BF360C; /* 你最喜歡的深橘紅色醒目提示 */
             min-height: 30px;
         }
 
         .result {
             font-size: 16px;
-            color: #9E9E9E;
-            border-top: 1px solid rgba(255,255,255,0.1);
+            color: #616161;
+            border-top: 1px solid rgba(0,0,0,0.1);
             padding-top: 15px;
         }
-        .result span { font-weight: bold; color: #FF1744; }
+        .result span { font-weight: bold; color: #BF360C; }
 
         .back-link { margin-top: 20px; }
-        .back-link a { color: #888; text-decoration: none; font-size: 14px; transition: 0.3s; }
-        .back-link a:hover { color: white; text-decoration: underline; }
+        .back-link a { color: #757575; text-decoration: none; font-size: 14px; transition: 0.3s; }
+        .back-link a:hover { color: #212121; text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -124,13 +122,13 @@
 
         <div class="info">
             <strong>排序規則</strong>
-            選擇序列中一個「基準值 (Pivot)」，將小於基準值的移至左側，大於的移至右側。遞迴對左右兩側重複此步驟。
+            選取一個「基準值 (Pivot)」，將小於它的移至左側，大於的移至右側。遞迴對兩側重複此步驟。
             <br>
             <strong>示意步驟</strong>
-            1) 選擇最後一個元素為基準值 (Pivot)
-            2) 指標掃描：比 Pivot 小放左，比 Pivot 大放右
+            1) 選擇最後一個元素為基準值 (紅色)
+            2) 比 Pivot 小放左，比 Pivot 大放右
             3) 將 Pivot 交換至中間正確位置，此位置已排序
-            4) 遞迴排序 Pivot 的左半邊和右半邊
+            4) 遞迴排序其左右兩側
         </div>
 
         <div class="controls">
@@ -143,7 +141,7 @@
 
         <div class="bars" id="bars"></div>
 
-        <div class="step" id="stepInfo">請點擊按鈕開始</div>
+        <div id="stepInfo" class="step">點擊按鈕開始</div>
 
         <div class="result">
             <p>排序前：<span id="beforeSort"></span></p>
@@ -156,29 +154,25 @@
     </div>
 
     <script>
-        const ANIMATION_DELAY = 500; // 給予足夠時間展示 Partition
+        const ANIMATION_DELAY = 500;
         let currentArray = [];
-        let sortedIndices = []; // 全域追蹤已排序索引
+        let sortedIndices = [];
 
         function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
-        // 渲染長條圖
         function render(array, highlights = {}) {
             const container = document.getElementById('bars');
             container.innerHTML = '';
             const max = Math.max(...array, 1);
-
             array.forEach((value, index) => {
                 const bar = document.createElement('div');
                 bar.className = 'bar';
                 bar.style.height = `${(value / max) * 120 + 20}px`;
 
-                // 處理顏色邏輯
                 if (highlights.sorted && highlights.sorted.includes(index)) bar.classList.add('sorted');
                 if (highlights.pivot === index) bar.classList.add('pivot');
                 if (highlights.compare === index) bar.classList.add('compare');
                 if (highlights.swapA === index || highlights.swapB === index) bar.classList.add('swap');
-                if (highlights.pivotPlacement === index) bar.classList.add('pivotPlacement');
 
                 const span = document.createElement('span');
                 span.textContent = value;
@@ -187,83 +181,61 @@
             });
         }
 
-        // 開始排序主函數
         async function startVisualSort() {
             const count = parseInt(document.getElementById('numCount').value);
             const btn = document.getElementById('btnStart');
-            
-            // 初始化
             btn.disabled = true;
             sortedIndices = [];
             currentArray = Array.from({length: count}, () => Math.floor(Math.random() * 90) + 10);
             document.getElementById('randomNumbers').textContent = '生成的數字：' + currentArray.join(', ');
             document.getElementById('beforeSort').textContent = currentArray.join(', ');
             document.getElementById('afterSort').textContent = '';
-            
             render(currentArray);
             await sleep(500);
-
-            // 開始快速排序
-            document.getElementById('stepInfo').textContent = "開始快速排序法 (遞迴分割)";
             await quickSort(currentArray, 0, currentArray.length - 1);
-
-            // 結束狀態：所有元素視為 sorted
             render(currentArray, { sorted: Array.from({length: count}, (_, i) => i) });
             document.getElementById('afterSort').textContent = currentArray.join(', ');
             document.getElementById('stepInfo').textContent = "排序完成！";
             btn.disabled = false;
         }
 
-        // 快速排序遞迴邏輯
         async function quickSort(arr, low, high) {
             if (low < high) {
-                // Partition
                 let pi = await partition(arr, low, high);
-                // pi 擺在正確位置，標註為 sorted
                 if (!sortedIndices.includes(pi)) sortedIndices.push(pi);
-                render(arr, { sorted: sortedIndices }); // 更新已排序狀態
-
-                // 遞迴左右半邊
                 await quickSort(arr, low, pi - 1);
                 await quickSort(arr, pi + 1, high);
             } else if (low === high) {
-                // 單一元素自然 sorted
                 if (!sortedIndices.includes(low)) sortedIndices.push(low);
                 render(arr, { sorted: sortedIndices });
             }
         }
 
-        // Partition 核心邏輯（視覺化重點）
         async function partition(arr, low, high) {
-            let pivot = arr[high]; // 選擇最後一個元素為 Pivot
-            let i = low - 1;       // 指標：小於 Pivot 區間的末端
-
-            document.getElementById('stepInfo').textContent = `[分治區：${low}-${high}] 選取 ${pivot} 為基準值 (紅色)`;
-            render(arr, { pivot: high, activeRange: {low, high}, sorted: sortedIndices });
+            let pivot = arr[high];
+            let i = low - 1;
+            document.getElementById('stepInfo').textContent = `選取 ${pivot} 為基準值 (紅色)`;
+            render(arr, { pivot: high, sorted: sortedIndices });
             await sleep(ANIMATION_DELAY);
 
             for (let j = low; j < high; j++) {
-                // 1. 比較過程
-                document.getElementById('stepInfo').textContent = `比較 ${arr[j]} (藍色) 與基準值 ${pivot}`;
-                render(arr, { pivot: high, compare: j, activeRange: {low, high}, sorted: sortedIndices });
+                document.getElementById('stepInfo').textContent = `比較 ${arr[j]} 與基準值 ${pivot}`;
+                render(arr, { pivot: high, compare: j, sorted: sortedIndices });
                 await sleep(ANIMATION_DELAY);
 
                 if (arr[j] < pivot) {
                     i++;
-                    // 2. 交換過程 (視覺化 i/j 交換)
-                    document.getElementById('stepInfo').textContent = `${arr[j]} < ${pivot}，交換 ${arr[i]} 與 ${arr[j]} (黃色)`;
+                    document.getElementById('stepInfo').textContent = `${arr[j]} < ${pivot}，交換位置`;
                     [arr[i], arr[j]] = [arr[j], arr[i]];
-                    render(arr, { pivot: high, swapA: i, swapB: j, activeRange: {low, high}, sorted: sortedIndices });
-                    await sleep(ANIMATION_DELAY * 0.7); // 交換動畫稍微快一點
+                    render(arr, { pivot: high, swapA: i, swapB: j, sorted: sortedIndices });
+                    await sleep(ANIMATION_DELAY);
                 }
             }
-            // 3. 基準值擺放過程
-            document.getElementById('stepInfo').textContent = `掃描結束，將基準值 ${pivot} 交換至正確位置 ${i + 2} (黃色)`;
+            document.getElementById('stepInfo').textContent = `掃描結束，將基準值換至正確位置`;
             [arr[i + 1], arr[high]] = [arr[high], arr[i + 1]];
-            render(arr, { pivotPlacement: i + 1, activeRange: {low, high}, sorted: sortedIndices });
+            render(arr, { swapA: i + 1, swapB: high, sorted: sortedIndices });
             await sleep(ANIMATION_DELAY);
-
-            return i + 1; // 回傳 Pivot 最終索引
+            return i + 1;
         }
     </script>
 </body>
