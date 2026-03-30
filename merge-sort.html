@@ -3,225 +3,327 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>合併排序法可視化 - Merge Sort</title>
+    <title>合併排序法 - 可視化示範</title>
     <style>
-        /* 繼承首頁的設計風格，但改為綠色調 */
+        /* --- 背景與整體樣式 (修改為綠色系) --- */
         body {
+            font-family: Arial, sans-serif;
+            background-color: #E8F5E9; /* 極淡綠色背景 */
+            color: #1B5E20; /* 深綠色文字 */
             margin: 0;
             padding: 0;
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #A5D6A7 0%, #E8F5E9 45%, #C8E6C9 100%);
-            color: #2E7D32;
-            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            height: 100vh;
+            overflow: hidden; /* 防止滾動條 */
         }
 
-        .container {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 16px;
-            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
-            padding: 30px;
-            text-align: center;
-            max-width: 700px;
+        /* --- 背景泡泡效果 (保留動畫，修改顏色為淡綠) --- */
+        body::before, body::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
+            height: 100%;
+            /* 泡泡顏色改為半透明白色/淡綠 */
+            background-image: radial-gradient(circle, rgba(255, 255, 255, 0.7) 15%, transparent 70%);
+            background-repeat: repeat;
+            background-size: 80px 80px;
+            animation: moveBubbles 8s infinite linear;
+            pointer-events: none;
+            z-index: 0;
         }
 
+        body::after {
+            animation-delay: 4s;
+            background-size: 120px 120px;
+        }
+
+        @keyframes moveBubbles {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-120%); }
+        }
+
+        /* --- 容器樣式 (修改為淡綠色) --- */
+        .container {
+            background-color: #C8E6C9; /* 淡綠色容器 */
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            padding: 20px 30px;
+            text-align: center;
+            max-width: 460px;
+            width: 100%;
+            z-index: 1; /* 確保內容在泡泡之上 */
+            position: relative;
+        }
+
+        /* --- 標題樣式 --- */
         h1 {
-            margin-top: 0;
+            font-size: 24px;
+            margin-bottom: 15px;
             color: #1B5E20;
-            font-size: 28px;
         }
 
-        /* 控制區域 */
-        .controls {
-            margin-bottom: 25px;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
-        }
-
+        /* --- 輸入框與按鈕樣式 (修改為綠色系) --- */
         input[type="number"] {
             padding: 10px;
-            border: 2px solid #81C784;
-            border-radius: 8px;
-            width: 80px;
+            border: 1px solid #A5D6A7;
+            border-radius: 5px;
+            font-size: 16px;
             outline: none;
         }
 
-        .btn {
-            padding: 10px 20px;
-            border-radius: 10px;
+        button {
+            background-color: #4CAF50; /* 綠色按鈕 */
+            color: white;
             border: none;
-            color: #fff;
-            font-size: 14px;
+            border-radius: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
             cursor: pointer;
-            transition: all 0.2s ease;
-            text-decoration: none;
-            display: inline-block;
+            transition: background-color 0.3s, transform 0.1s;
         }
 
-        .btn-generate { background: linear-gradient(135deg, #66BB6A, #43A047); }
-        .btn-sort { background: linear-gradient(135deg, #2E7D32, #1B5E20); }
-        .btn-back { background: #78909C; margin-top: 20px; }
+        button:hover {
+            background-color: #388E3C; /* 深綠色懸停效果 */
+        }
+        
+        button:active {
+            transform: scale(0.98);
+        }
 
-        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        .btn:disabled { background: #ccc; cursor: not-allowed; }
+        button:disabled {
+            background-color: #9e9e9e;
+            cursor: not-allowed;
+        }
 
-        /* 排序圖形顯示區 */
-        #visual-container {
+        /* 資訊區域 */
+        .info {
+            text-align: left;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 16px;
+            background: rgba(255,255,255,0.5);
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .info strong {
+            display: block;
+            margin-bottom: 4px;
+            color: #1B5E20;
+        }
+
+        /* --- 視覺化條列 (保留架構，修改顏色) --- */
+        .bars {
             display: flex;
             align-items: flex-end;
             justify-content: center;
-            height: 200px;
-            gap: 4px;
-            margin: 20px 0;
-            border-bottom: 2px solid #81C784;
-            padding-bottom: 5px;
+            height: 170px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            gap: 6px;
+            /* background: rgba(255,255,255,0.3); 偵錯用 */
+            padding-bottom: 25px; /* 為數字留空間 */
+            position: relative;
         }
 
         .bar {
-            background-color: #66BB6A;
-            width: 30px;
-            border-radius: 4px 4px 0 0;
-            display: flex;
-            justify-content: center;
-            align-items: flex-end;
-            color: white;
-            font-size: 10px;
-            padding-bottom: 5px;
-            transition: height 0.3s ease, background-color 0.3s;
+            width: 25px;
+            background-color: #81C784; /* 預設綠色長條 */
+            border-radius: 6px 6px 0 0;
+            position: relative;
+            transition: background-color 0.2s, height 0.3s ease;
         }
 
-        .bar.comparing { background-color: #FF7043; } /* 正在比較的顏色 */
-        .bar.merged { background-color: #388E3C; }    /* 已合併的顏色 */
+        .bar span {
+            position: absolute;
+            bottom: -22px;
+            width: 100%;
+            font-size: 12px;
+            text-align: center;
+            color: #1B5E20;
+            font-weight: bold;
+        }
 
-        .explanation {
+        /* 排序狀態顏色 */
+        .bar.compare {
+            background-color: #FF7043; /* 正在比較：橘紅色 (對比色) */
+        }
+
+        .bar.highlight {
+            background-color: #FFEB3B; /* 正在拆解/寫回：黃色 */
+        }
+
+        .bar.sorted {
+            background-color: #2E7D32; /* 已排序完成：深綠色 */
+        }
+
+        /* 步驟與數字顯示區域 */
+        .step {
+            margin-top: 5px;
             font-size: 14px;
-            line-height: 1.6;
-            text-align: left;
-            background: #F1F8E9;
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid #4CAF50;
+            min-height: 20px;
+            color: #33691E;
+            font-weight: bold;
+        }
+
+        .random-numbers {
+            margin-top: 10px;
+            font-size: 15px;
+            color: #555;
+            word-break: break-all;
+        }
+
+        /* 結果區域 */
+        .result {
+            margin-top: 15px;
+            font-size: 15px;
+            border-top: 1px solid #A5D6A7;
+            padding-top: 10px;
+        }
+
+        .result p { margin: 5px 0; }
+
+        .result span {
+            font-weight: bold;
+            color: #1B5E20;
+        }
+
+        /* --- 返回首頁連結 (修改為綠色) --- */
+        .back-link {
+            display: block;
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .back-link a {
+            color: #388E3C;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+
+        .back-link a:hover {
+            color: #4CAF50;
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
+    <div class="container">
+        <h1>合併排序法 (Merge Sort)</h1>
+        
+        <div class="info">
+            <strong>排序規則</strong>
+            採用「分治法」(Divide and Conquer)。將陣列不斷對半拆解直到單個元素，再將有序的子陣列兩兩「合併」，直到最終整體有序。
+            <br>
+            <strong>示意步驟</strong>
+            1) 遞迴地將當前序列對半分割<br>
+            2) 排序左半邊，排序右半邊<br>
+            3) 比較兩邊頭部元素，依序「合併」回原陣列
+        </div>
 
-<div class="container">
-    <h1>合併排序法 (Merge Sort)</h1>
+        <div style="margin-bottom: 10px;">
+            <label>數字數量 (1-12)：</label>
+            <input type="number" id="numCount" min="1" max="12" value="8" style="width: 50px; text-align: center;">
+            <button onclick="generateAndSort()" id="btnAction">生成並排序</button>
+        </div>
 
-    <div class="controls">
-        <label for="count">數字數量:</label>
-        <input type="number" id="count" value="8" min="2" max="15">
-        <button class="btn btn-generate" onclick="generateArray()">隨機生成</button>
-        <button class="btn btn-sort" id="sortBtn" onclick="startMergeSort()">開始排序</button>
+        <div class="bars" id="bars">
+            </div>
+        
+        <div class="step" id="stepInfo">等待生成...</div>
+
+        <div class="random-numbers" id="randomNumbers"></div>
+
+        <div class="result">
+            <p>排序前：<span id="beforeSort"></span></p>
+            <p>排序後：<span id="afterSort"></span></p>
+        </div>
+        
+        <div class="back-link">
+            <a href="index.html">← 返回首頁</a>
+        </div>
     </div>
 
-    <div id="visual-container"></div>
+    <script>
+        // 設定與氣泡排序相近的延遲，合併排序步驟較多，稍微調快一點點
+        const ANIMATION_DELAY = 250; 
+        let currentNumbers = [];
+        let isRunning = false;
 
-    <div class="explanation">
-        <strong>原理：</strong> 合併排序採用「分治法」。先將陣列不斷對半拆解，直到每個部分只剩一個數字，再兩兩依照大小順序「合併」回去，最終完成排序。
-    </div>
-
-    <a href="index.html" class="btn btn-back">← 返回首頁</a>
-</div>
-
-[Image of merge sort algorithm]
-
-<script>
-    let array = [];
-    const container = document.getElementById('visual-container');
-
-    // 隨機生成陣列
-    function generateArray() {
-        const count = document.getElementById('count').value;
-        array = [];
-        container.innerHTML = '';
-        for (let i = 0; i < count; i++) {
-            const val = Math.floor(Math.random() * 90) + 10;
-            array.push(val);
-            const bar = document.createElement('div');
-            bar.classList.add('bar');
-            bar.style.height = `${val * 2}px`;
-            bar.innerText = val;
-            bar.id = `bar-${i}`;
-            container.appendChild(bar);
-        }
-        document.getElementById('sortBtn').disabled = false;
-    }
-
-    // 延遲函數 (動畫用)
-    const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
-    async function startMergeSort() {
-        document.getElementById('sortBtn').disabled = true;
-        await mergeSort(0, array.length - 1);
-        // 完成後全部變深綠色
-        const bars = document.getElementsByClassName('bar');
-        for (let bar of bars) bar.style.backgroundColor = '#388E3C';
-    }
-
-    async function mergeSort(start, end) {
-        if (start >= end) return;
-        const mid = Math.floor((start + end) / 2);
-        
-        await mergeSort(start, mid);
-        await mergeSort(mid + 1, end);
-        await merge(start, mid, end);
-    }
-
-    async function merge(start, mid, end) {
-        let leftArr = array.slice(start, mid + 1);
-        let rightArr = array.slice(mid + 1, end + 1);
-        
-        let i = 0, j = 0, k = start;
-
-        while (i < leftArr.length && j < rightArr.length) {
-            // 高亮正在比較的元素
-            const barK = document.getElementById(`bar-${k}`);
-            barK.classList.add('comparing');
-            await sleep(400);
-
-            if (leftArr[i] <= rightArr[j]) {
-                array[k] = leftArr[i];
-                i++;
-            } else {
-                array[k] = rightArr[j];
-                j++;
-            }
+        // --- 主程式：生成並開始排序 ---
+        async function generateAndSort() {
+            if (isRunning) return;
             
-            // 更新畫面
-            barK.style.height = `${array[k] * 2}px`;
-            barK.innerText = array[k];
-            barK.classList.remove('comparing');
-            barK.classList.add('merged');
-            k++;
+            const countInput = document.getElementById('numCount');
+            let count = parseInt(countInput.value);
+
+            // 驗證輸入
+            if (isNaN(count) || count < 1 || count > 12) {
+                alert('請輸入 1 到 12 之間的數字以確保視覺化效果。');
+                count = 8;
+                countInput.value = 8;
+            }
+
+            isRunning = true;
+            document.getElementById('btnAction').disabled = true;
+            document.getElementById('afterSort').textContent = '';
+            document.getElementById('stepInfo').textContent = '準備中...';
+
+            // 1. 生成隨機數字
+            currentNumbers = [];
+            for (let i = 0; i < count; i++) {
+                currentNumbers.push(Math.floor(Math.random() * 90) + 10); // 10-99，確保兩位數視覺美觀
+            }
+
+            // 2. 顯示初始狀態
+            document.getElementById('randomNumbers').textContent = '生成的原始數字：' + currentNumbers.join(', ');
+            document.getElementById('beforeSort').textContent = currentNumbers.join(', ');
+            
+            // 3. 初始渲染長條
+            renderBars(currentNumbers);
+            await sleep(500); // 停頓一下讓使用者看清楚初始狀態
+
+            // 4. 開始執行合併排序 (帶動畫)
+            let arrForSorting = [...currentNumbers];
+            await performMergeSort(arrForSorting, 0, arrForSorting.length - 1);
+
+            // 5. 完成排序
+            renderBars(arrForSorting, {}, Array.from({length: arrForSorting.length}, (_, i) => i)); // 全部變深綠
+            document.getElementById('stepInfo').textContent = '排序完成！';
+            document.getElementById('afterSort').textContent = arrForSorting.join(', ');
+            
+            isRunning = false;
+            document.getElementById('btnAction').disabled = false;
         }
 
-        while (i < leftArr.length) {
-            await sleep(200);
-            array[k] = leftArr[i];
-            const barK = document.getElementById(`bar-${k}`);
-            barK.style.height = `${array[k] * 2}px`;
-            barK.innerText = array[k];
-            barK.classList.add('merged');
-            i++; k++;
+        // --- 工具：延遲函數 ---
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
         }
 
-        while (j < rightArr.length) {
-            await sleep(200);
-            array[k] = rightArr[j];
-            const barK = document.getElementById(`bar-${k}`);
-            barK.style.height = `${array[k] * 2}px`;
-            barK.innerText = array[k];
-            barK.classList.add('merged');
-            j++; k++;
-        }
-    }
+        // --- 核心：渲染長條圖 (參照氣泡排序架構) ---
+        // array: 當前陣列, highlights: 需高亮的索引 {compare:[], highlight:[]}, sortedIdx: 已深綠的索引 []
+        function renderBars(array, highlights = {}, sortedIdx = []) {
+            const container = document.getElementById('bars');
+            container.innerHTML = '';
 
-    //
+            if (array.length === 0) return;
+            const max = Math.max(...array, 1);
+
+            array.forEach((value, index) => {
+                const bar = document.createElement('div');
+                bar.className = 'bar';
+                // 計算高度 (基本高度 20px + 比例高度 130px = 最大 150px，留空間給數字)
+                bar.style.height = `${(value / max) * 130 + 20}px`;
+
+                // 設置顏色狀態
+                if (sortedIdx.includes(index)) {
+                    bar.classList.add('sorted');
+                } else if (highlights.compare && highlights.compare.includes(index)) {
+                    bar.classList.add('compare'); // 橘色
+                } else if
