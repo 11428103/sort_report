@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>合併排序法 - 綠色示範版</title>
+    <title>合併排序法 - 綠色優化版</title>
     <style>
-        /* 繼承你的氣泡排序風格，並改為綠色系 */
+        /* 背景與整體樣式 - 綠色系 */
         body {
             font-family: Arial, sans-serif;
             background-color: #E8F5E9; 
@@ -13,6 +13,7 @@
             margin: 0; padding: 0;
             display: flex; justify-content: center; align-items: center;
             height: 100vh; overflow: hidden;
+            position: relative;
         }
 
         /* 綠色背景泡泡動畫 */
@@ -25,77 +26,126 @@
         body::after { animation-delay: 4s; background-size: 120px 120px; }
         @keyframes moveBubbles { 0% { transform: translateY(0); } 100% { transform: translateY(-120%); } }
 
+        /* 容器樣式 */
         .container {
-            background-color: #C8E6C9; border-radius: 10px;
+            background-color: #C8E6C9; 
+            border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-            padding: 20px 30px; text-align: center;
-            max-width: 460px; width: 100%; z-index: 1; position: relative;
+            padding: 25px 35px;
+            text-align: center;
+            max-width: 480px;
+            width: 100%;
+            z-index: 1;
+            max-height: 95vh;
+            overflow-y: auto;
+            position: relative;
         }
 
-        h1 { font-size: 24px; margin-bottom: 15px; }
+        h1 { font-size: 26px; margin-bottom: 15px; margin-top: 0; color: #1B5E20; }
 
+        /* --- 排序規則與步驟區塊 --- */
         .info {
-            text-align: left; font-size: 14px; line-height: 1.5; margin-bottom: 16px;
-            background: rgba(255,255,255,0.5); padding: 10px; border-radius: 8px;
+            text-align: left;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.5);
+            padding: 12px;
+            border-radius: 8px;
+            color: #2E7D32;
         }
+        .info strong { display: block; margin-bottom: 4px; color: #1B5E20; }
 
-        input { padding: 8px; border: 1px solid #A5D6A7; border-radius: 5px; width: 50px; text-align: center; }
-        
+        /* 控制項 */
+        .controls { margin-bottom: 15px; }
+        input {
+            width: 50px; padding: 8px; border: 1px solid #A5D6A7;
+            border-radius: 5px; font-size: 16px; text-align: center;
+        }
         button {
-            background-color: #4CAF50; color: white; border: none; border-radius: 5px;
-            padding: 10px 15px; font-size: 14px; cursor: pointer; transition: 0.3s;
+            background-color: #4CAF50; color: white; border: none;
+            border-radius: 5px; padding: 8px 15px; font-size: 16px;
+            cursor: pointer; transition: 0.3s;
         }
         button:hover { background-color: #388E3C; }
         button:disabled { background-color: #9e9e9e; cursor: not-allowed; }
 
-        /* 視覺化條列 */
+        .random-numbers { margin-bottom: 15px; font-weight: bold; color: #1B5E20; }
+
+        /* --- 視覺化排版：長條圖在上 --- */
         .bars {
             display: flex; align-items: flex-end; justify-content: center;
-            height: 160px; margin: 20px 0; gap: 6px; padding-bottom: 25px;
+            height: 160px; margin: 10px 0; gap: 6px;
         }
-
         .bar {
-            width: 25px; background-color: #81C784; border-radius: 6px 6px 0 0;
-            position: relative; transition: height 0.3s ease, background-color 0.2s;
+            width: 25px; background-color: #81C784;
+            border-radius: 5px 5px 0 0; position: relative;
+            transition: height 0.3s ease, background-color 0.2s;
         }
-
-        .bar span { position: absolute; bottom: -22px; width: 100%; font-size: 12px; text-align: center; color: #1B5E20; font-weight: bold; }
+        .bar span {
+            position: absolute; bottom: -22px; width: 100%;
+            font-size: 12px; text-align: center; font-weight: bold;
+            color: #1B5E20;
+        }
 
         /* 狀態顏色 */
         .bar.compare { background-color: #FF7043; } /* 橘色：正在比較 */
         .bar.highlight { background-color: #FFEB3B; } /* 黃色：正在處理 */
-        .bar.sorted { background-color: #2E7D32; } /* 深綠：該區域已排序 */
+        .bar.sorted { background-color: #2E7D32; }   /* 深綠：該區域已排序 */
 
-        .step { font-size: 14px; min-height: 20px; color: #33691E; font-weight: bold; margin: 10px 0; }
-        .result { font-size: 14px; border-top: 1px solid #A5D6A7; padding-top: 10px; }
-        .result span { font-weight: bold; }
+        /* --- 核心排版：說明文字在下（加大、置中、深橘紅） --- */
+        .step {
+            margin: 30px 0 15px 0;
+            font-size: 20px;
+            font-weight: bold;
+            color: #BF360C; /* 深橘紅色，維持你最喜歡的標註樣式 */
+            min-height: 30px;
+        }
 
-        .back-link { margin-top: 15px; }
+        .result {
+            font-size: 16px;
+            color: #33691E;
+            border-top: 1px solid rgba(0,0,0,0.1);
+            padding-top: 15px;
+        }
+        .result span { font-weight: bold; color: #BF360C; }
+
+        .back-link { margin-top: 20px; }
         .back-link a { color: #388E3C; text-decoration: none; font-size: 14px; }
+        .back-link a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>合併排序法 (Merge Sort)</h1>
-        
+
         <div class="info">
-            <strong>排序規則：</strong>將陣列對半拆解，直到剩一個數字，再兩兩依照大小順序「合併」回去。
+            <strong>排序規則</strong>
+            將陣列對半拆解，直到剩一個數字，再兩兩依照大小順序「合併」回去。採用分治法（Divide and Conquer）策略。
+            <br>
+            <strong>示意步驟</strong>
+            1) 遞迴地將當前序列對半分割
+            2) 排序左半邊，排序右半邊
+            3) 比較兩邊頭部元素，依序「合併」回原陣列
         </div>
 
-        <div>
+        <div class="controls">
             數字數量 (1-10)：
-            <input type="number" id="numCount" min="1" max="10" value="6">
+            <input type="number" id="numCount" min="1" max="10" value="8">
             <button onclick="startVisualSort()" id="btnStart">生成並排序</button>
         </div>
 
+        <div class="random-numbers" id="randomNumbers"></div>
+
         <div class="bars" id="bars"></div>
+
         <div class="step" id="stepInfo">請點擊按鈕開始</div>
 
         <div class="result">
             <p>排序前：<span id="beforeSort"></span></p>
             <p>排序後：<span id="afterSort"></span></p>
         </div>
-        
+
         <div class="back-link">
             <a href="index.html">← 返回首頁</a>
         </div>
@@ -107,22 +157,17 @@
 
         function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
-        // 渲染長條圖
         function render(array, highlights = {}) {
             const container = document.getElementById('bars');
             container.innerHTML = '';
             const max = Math.max(...array, 1);
-
             array.forEach((value, index) => {
                 const bar = document.createElement('div');
                 bar.className = 'bar';
                 bar.style.height = `${(value / max) * 120 + 20}px`;
-
-                // 處理顏色邏輯
                 if (highlights.compare && highlights.compare.includes(index)) bar.classList.add('compare');
                 if (highlights.active && highlights.active.includes(index)) bar.classList.add('highlight');
                 if (highlights.sorted && highlights.sorted.includes(index)) bar.classList.add('sorted');
-
                 const span = document.createElement('span');
                 span.textContent = value;
                 bar.appendChild(span);
@@ -130,24 +175,17 @@
             });
         }
 
-        // 開始排序主函數
         async function startVisualSort() {
             const count = parseInt(document.getElementById('numCount').value);
             const btn = document.getElementById('btnStart');
-            
-            // 初始化
             btn.disabled = true;
             currentArray = Array.from({length: count}, () => Math.floor(Math.random() * 90) + 10);
+            document.getElementById('randomNumbers').textContent = '生成的數字：' + currentArray.join(', ');
             document.getElementById('beforeSort').textContent = currentArray.join(', ');
             document.getElementById('afterSort').textContent = '';
-            
             render(currentArray);
             await sleep(500);
-
-            // 執行合併排序
             await mergeSort(currentArray, 0, currentArray.length - 1);
-
-            // 結束
             render(currentArray, { sorted: Array.from({length: count}, (_, i) => i) });
             document.getElementById('afterSort').textContent = currentArray.join(', ');
             document.getElementById('stepInfo').textContent = "排序完成！";
@@ -157,11 +195,9 @@
         async function mergeSort(arr, l, r) {
             if (l >= r) return;
             const m = Math.floor(l + (r - l) / 2);
-
             document.getElementById('stepInfo').textContent = `拆解區域：[${l} 到 ${r}]`;
             render(arr, { active: Array.from({length: r - l + 1}, (_, i) => l + i) });
             await sleep(ANIMATION_DELAY);
-
             await mergeSort(arr, l, m);
             await mergeSort(arr, m + 1, r);
             await merge(arr, l, m, r);
@@ -172,26 +208,17 @@
             const n2 = r - m;
             let L = arr.slice(l, m + 1);
             let R = arr.slice(m + 1, r + 1);
-
             let i = 0, j = 0, k = l;
-
             while (i < n1 && j < n2) {
                 document.getElementById('stepInfo').textContent = `比較：${L[i]} 和 ${R[j]}`;
-                render(arr, { compare: [k, l + i, m + 1 + j], active: [l, r] });
+                render(arr, { compare: [k, l + i, m + 1 + j], active: Array.from({length: r - l + 1}, (_, x) => l + x) });
                 await sleep(ANIMATION_DELAY);
-
-                if (L[i] <= R[j]) {
-                    arr[k] = L[i];
-                    i++;
-                } else {
-                    arr[k] = R[j];
-                    j++;
-                }
+                if (L[i] <= R[j]) { arr[k] = L[i]; i++; } 
+                else { arr[k] = R[j]; j++; }
                 render(arr, { active: [k] });
                 await sleep(ANIMATION_DELAY / 2);
                 k++;
             }
-
             while (i < n1) {
                 arr[k] = L[i];
                 render(arr, { active: [k] });
