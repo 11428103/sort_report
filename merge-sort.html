@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>合併排序法 - Merge Sort Report</title>
+    <style>
+        :root {
+            --primary-green: #2e7d32; /* 深綠色 */
+            --light-green: #e8f5e9;   /* 極淺綠背景 */
+            --accent-green: #4caf50;  /* 按鈕綠 */
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-green);
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-width: 800px;
+            width: 100%;
+        }
+
+        h1 {
+            color: var(--primary-green);
+            border-bottom: 3px solid var(--accent-green);
+            padding-bottom: 10px;
+        }
+
+        .control-panel {
+            margin: 20px 0;
+            display: flex;
+            gap: 10px;
+        }
+
+        input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            flex-grow: 1;
+        }
+
+        button {
+            background-color: var(--accent-green);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background-color: var(--primary-green);
+        }
+
+        .result-area {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-left: 5px solid var(--accent-green);
+            min-height: 50px;
+            word-break: break-all;
+        }
+
+        .explanation {
+            margin-top: 30px;
+            line-height: 1.6;
+        }
+
+        .back-btn {
+            margin-top: 20px;
+            text-decoration: none;
+            color: var(--primary-green);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>合併排序法 (Merge Sort)</h1>
+    
+    <div class="explanation">
+        <p>合併排序法是一種採用<strong>分治法 (Divide and Conquer)</strong> 的排序演算法。它將陣列對半分割，直到每個子陣列只有一個元素，再將其合併成有序的陣列。</p>
+    </div>
+
+    <div class="control-panel">
+        <input type="text" id="numbers" placeholder="請輸入數字，用逗號隔開 (例如: 5, 2, 9, 1)">
+        <button onclick="startSort()">執行排序</button>
+    </div>
+
+    <div id="result" class="result-area">
+        排序結果將顯示於此...
+    </div>
+
+    <a href="index.html" class="back-btn">← 回到首頁</a>
+</div>
+
+<script>
+    function mergeSort(arr) {
+        if (arr.length <= 1) return arr;
+
+        const mid = Math.floor(arr.length / 2);
+        const left = mergeSort(arr.slice(0, mid));
+        const right = mergeSort(arr.slice(mid));
+
+        return merge(left, right);
+    }
+
+    function merge(left, right) {
+        let result = [];
+        let i = 0, j = 0;
+
+        while (i < left.length && j < right.length) {
+            if (left[i] < right[j]) {
+                result.push(left[i++]);
+            } else {
+                result.push(right[j++]);
+            }
+        }
+        return result.concat(left.slice(i)).concat(right.slice(j));
+    }
+
+    function startSort() {
+        const input = document.getElementById('numbers').value;
+        const arr = input.split(',').map(num => parseFloat(num.trim())).filter(num => !isNaN(num));
+        
+        if (arr.length === 0) {
+            alert('請輸入有效的數字！');
+            return;
+        }
+
+        const sortedArr = mergeSort(arr);
+        document.getElementById('result').innerHTML = `<strong>排序結果：</strong> ${sortedArr.join(' → ')}`;
+    }
+</script>
+
+</body>
+</html>
