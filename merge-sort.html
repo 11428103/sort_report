@@ -3,86 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>合併排序法 - Merge Sort Report</title>
+    <title>合併排序法可視化 - Merge Sort</title>
     <style>
-        :root {
-            --primary-green: #2e7d32; /* 深綠色 */
-            --light-green: #e8f5e9;   /* 極淺綠背景 */
-            --accent-green: #4caf50;  /* 按鈕綠 */
-        }
-
+        /* 繼承首頁的設計風格，但改為綠色調 */
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--light-green);
-            color: #333;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #A5D6A7 0%, #E8F5E9 45%, #C8E6C9 100%);
+            color: #2E7D32;
+            min-height: 100vh;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
+            padding: 20px;
         }
 
         .container {
-            background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            max-width: 800px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+            padding: 30px;
+            text-align: center;
+            max-width: 700px;
             width: 100%;
         }
 
         h1 {
-            color: var(--primary-green);
-            border-bottom: 3px solid var(--accent-green);
-            padding-bottom: 10px;
+            margin-top: 0;
+            color: #1B5E20;
+            font-size: 28px;
         }
 
-        .control-panel {
-            margin: 20px 0;
+        /* 控制區域 */
+        .controls {
+            margin-bottom: 25px;
             display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
             gap: 10px;
         }
 
-        input {
+        input[type="number"] {
             padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            flex-grow: 1;
+            border: 2px solid #81C784;
+            border-radius: 8px;
+            width: 80px;
+            outline: none;
         }
 
-        button {
-            background-color: var(--accent-green);
-            color: white;
-            border: none;
+        .btn {
             padding: 10px 20px;
-            border-radius: 5px;
+            border-radius: 10px;
+            border: none;
+            color: #fff;
+            font-size: 14px;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
         }
 
-        button:hover {
-            background-color: var(--primary-green);
+        .btn-generate { background: linear-gradient(135deg, #66BB6A, #43A047); }
+        .btn-sort { background: linear-gradient(135deg, #2E7D32, #1B5E20); }
+        .btn-back { background: #78909C; margin-top: 20px; }
+
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .btn:disabled { background: #ccc; cursor: not-allowed; }
+
+        /* 排序圖形顯示區 */
+        #visual-container {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            height: 200px;
+            gap: 4px;
+            margin: 20px 0;
+            border-bottom: 2px solid #81C784;
+            padding-bottom: 5px;
         }
 
-        .result-area {
-            margin-top: 20px;
-            padding: 15px;
-            background: #f9f9f9;
-            border-left: 5px solid var(--accent-green);
-            min-height: 50px;
-            word-break: break-all;
+        .bar {
+            background-color: #66BB6A;
+            width: 30px;
+            border-radius: 4px 4px 0 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            color: white;
+            font-size: 10px;
+            padding-bottom: 5px;
+            transition: height 0.3s ease, background-color 0.3s;
         }
+
+        .bar.comparing { background-color: #FF7043; } /* 正在比較的顏色 */
+        .bar.merged { background-color: #388E3C; }    /* 已合併的顏色 */
 
         .explanation {
-            margin-top: 30px;
+            font-size: 14px;
             line-height: 1.6;
-        }
-
-        .back-btn {
-            margin-top: 20px;
-            text-decoration: none;
-            color: var(--primary-green);
-            font-weight: bold;
+            text-align: left;
+            background: #F1F8E9;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #4CAF50;
         }
     </style>
 </head>
@@ -90,61 +114,114 @@
 
 <div class="container">
     <h1>合併排序法 (Merge Sort)</h1>
-    
+
+    <div class="controls">
+        <label for="count">數字數量:</label>
+        <input type="number" id="count" value="8" min="2" max="15">
+        <button class="btn btn-generate" onclick="generateArray()">隨機生成</button>
+        <button class="btn btn-sort" id="sortBtn" onclick="startMergeSort()">開始排序</button>
+    </div>
+
+    <div id="visual-container"></div>
+
     <div class="explanation">
-        <p>合併排序法是一種採用<strong>分治法 (Divide and Conquer)</strong> 的排序演算法。它將陣列對半分割，直到每個子陣列只有一個元素，再將其合併成有序的陣列。</p>
+        <strong>原理：</strong> 合併排序採用「分治法」。先將陣列不斷對半拆解，直到每個部分只剩一個數字，再兩兩依照大小順序「合併」回去，最終完成排序。
     </div>
 
-    <div class="control-panel">
-        <input type="text" id="numbers" placeholder="請輸入數字，用逗號隔開 (例如: 5, 2, 9, 1)">
-        <button onclick="startSort()">執行排序</button>
-    </div>
-
-    <div id="result" class="result-area">
-        排序結果將顯示於此...
-    </div>
-
-    <a href="index.html" class="back-btn">← 回到首頁</a>
+    <a href="index.html" class="btn btn-back">← 返回首頁</a>
 </div>
 
+[Image of merge sort algorithm]
+
 <script>
-    function mergeSort(arr) {
-        if (arr.length <= 1) return arr;
+    let array = [];
+    const container = document.getElementById('visual-container');
 
-        const mid = Math.floor(arr.length / 2);
-        const left = mergeSort(arr.slice(0, mid));
-        const right = mergeSort(arr.slice(mid));
-
-        return merge(left, right);
-    }
-
-    function merge(left, right) {
-        let result = [];
-        let i = 0, j = 0;
-
-        while (i < left.length && j < right.length) {
-            if (left[i] < right[j]) {
-                result.push(left[i++]);
-            } else {
-                result.push(right[j++]);
-            }
+    // 隨機生成陣列
+    function generateArray() {
+        const count = document.getElementById('count').value;
+        array = [];
+        container.innerHTML = '';
+        for (let i = 0; i < count; i++) {
+            const val = Math.floor(Math.random() * 90) + 10;
+            array.push(val);
+            const bar = document.createElement('div');
+            bar.classList.add('bar');
+            bar.style.height = `${val * 2}px`;
+            bar.innerText = val;
+            bar.id = `bar-${i}`;
+            container.appendChild(bar);
         }
-        return result.concat(left.slice(i)).concat(right.slice(j));
+        document.getElementById('sortBtn').disabled = false;
     }
 
-    function startSort() {
-        const input = document.getElementById('numbers').value;
-        const arr = input.split(',').map(num => parseFloat(num.trim())).filter(num => !isNaN(num));
+    // 延遲函數 (動畫用)
+    const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+    async function startMergeSort() {
+        document.getElementById('sortBtn').disabled = true;
+        await mergeSort(0, array.length - 1);
+        // 完成後全部變深綠色
+        const bars = document.getElementsByClassName('bar');
+        for (let bar of bars) bar.style.backgroundColor = '#388E3C';
+    }
+
+    async function mergeSort(start, end) {
+        if (start >= end) return;
+        const mid = Math.floor((start + end) / 2);
         
-        if (arr.length === 0) {
-            alert('請輸入有效的數字！');
-            return;
+        await mergeSort(start, mid);
+        await mergeSort(mid + 1, end);
+        await merge(start, mid, end);
+    }
+
+    async function merge(start, mid, end) {
+        let leftArr = array.slice(start, mid + 1);
+        let rightArr = array.slice(mid + 1, end + 1);
+        
+        let i = 0, j = 0, k = start;
+
+        while (i < leftArr.length && j < rightArr.length) {
+            // 高亮正在比較的元素
+            const barK = document.getElementById(`bar-${k}`);
+            barK.classList.add('comparing');
+            await sleep(400);
+
+            if (leftArr[i] <= rightArr[j]) {
+                array[k] = leftArr[i];
+                i++;
+            } else {
+                array[k] = rightArr[j];
+                j++;
+            }
+            
+            // 更新畫面
+            barK.style.height = `${array[k] * 2}px`;
+            barK.innerText = array[k];
+            barK.classList.remove('comparing');
+            barK.classList.add('merged');
+            k++;
         }
 
-        const sortedArr = mergeSort(arr);
-        document.getElementById('result').innerHTML = `<strong>排序結果：</strong> ${sortedArr.join(' → ')}`;
-    }
-</script>
+        while (i < leftArr.length) {
+            await sleep(200);
+            array[k] = leftArr[i];
+            const barK = document.getElementById(`bar-${k}`);
+            barK.style.height = `${array[k] * 2}px`;
+            barK.innerText = array[k];
+            barK.classList.add('merged');
+            i++; k++;
+        }
 
-</body>
-</html>
+        while (j < rightArr.length) {
+            await sleep(200);
+            array[k] = rightArr[j];
+            const barK = document.getElementById(`bar-${k}`);
+            barK.style.height = `${array[k] * 2}px`;
+            barK.innerText = array[k];
+            barK.classList.add('merged');
+            j++; k++;
+        }
+    }
+
+    //
