@@ -1,350 +1,361 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>氣泡排序法</title>
-	<style>
-		/* 背景與整體樣式 */
-		body {
-			font-family: Arial, sans-serif;
-			background-color: #EDE7F6; /* 淡紫色背景 */
-			color: #4A148C; /* 深紫色文字 */
-			margin: 0;
-			padding: 0;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			height: 100vh;
-			overflow: hidden; /* 防止滾動條 */
-		}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>氣泡排序法</title>
+    <style>
+        /* 背景與整體樣式 - 顏色保留，版型居中 */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #EDE7F6; /* 淡紫色背景 */
+            color: #4A148C; /* 深紫色文字 */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden; /* 防止滾動條 */
+            position: relative; /* 確保偽元素定位正確 */
+        }
 
-		/* 背景泡泡效果 */
-		body::before, body::after {
-			content: '';
-			position: absolute;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100%;
-			background-image: radial-gradient(circle, rgba(255, 255, 255, 0.8) 15%, transparent 70%);
-			background-repeat: repeat;
-			background-size: 80px 80px; /* 調整泡泡大小 */
-			animation: moveBubbles 8s infinite linear; /* 加快動畫速度 */
-			pointer-events: none; /* 防止影響互動 */
-		}
+        /* 背景泡泡效果 - 完全保留 */
+        body::before, body::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(circle, rgba(255, 255, 255, 0.8) 15%, transparent 70%);
+            background-repeat: repeat;
+            background-size: 80px 80px; /* 調整泡泡大小 */
+            animation: moveBubbles 8s infinite linear; /* 加快動畫速度 */
+            pointer-events: none; /* 防止影響互動 */
+            z-index: 0; /* 確保內容在泡泡之上 */
+        }
 
-		body::after {
-			animation-delay: 4s; /* 調整延遲 */
-			background-size: 120px 120px; /* 調整第二層泡泡大小 */
-		}
+        body::after {
+            animation-delay: 4s; /* 調整延遲 */
+            background-size: 120px 120px; /* 調整第二層泡泡大小 */
+        }
 
-		@keyframes moveBubbles {
-			0% {
-				transform: translateY(0);
-			}
-			100% {
-				transform: translateY(-120%); /* 增加移動距離 */
-			}
-		}
+        @keyframes moveBubbles {
+            0% {
+                transform: translateY(0);
+            }
+            100% {
+                transform: translateY(-120%); /* 增加移動距離 */
+            }
+        }
 
-		/* 容器樣式 */
-		.container {
-			background-color: #F3E5F5; /* 淡紫色容器 */
-			border-radius: 10px;
-			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-			padding: 20px 30px;
-			text-align: center;
-			max-width: 460px;
-			width: 100%;
-			z-index: 1; /* 確保內容在泡泡之上 */
-		}
+        /* 容器樣式 - 顏色保留，加入相對定位 */
+        .container {
+            background-color: #F3E5F5; /* 淡紫色容器 */
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 20px 30px;
+            text-align: center;
+            max-width: 460px;
+            width: 100%;
+            z-index: 1; /* 確保內容在泡泡之上 */
+            position: relative; /* 確保 z-index 生效 */
+        }
 
-		/* 標題樣式 */
-		h1 {
-			font-size: 24px;
-			margin-bottom: 20px;
-		}
+        /* 標題樣式 - 完全保留 */
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            margin-top: 0; /* 確保標題貼頂 */
+        }
 
-		/* 輸入框與按鈕樣式 */
-		input {
-			width: calc(100% - 20px);
-			padding: 10px;
-			margin-bottom: 15px;
-			border: 1px solid #D7CCC8;
-			border-radius: 5px;
-			font-size: 16px;
-		}
+        /* 輸入框樣式 - 顏色保留，調整寬度 */
+        input {
+            width: 60px; /* 調整寬度以適應版型 */
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #D7CCC8;
+            border-radius: 5px;
+            font-size: 16px;
+            text-align: center; /* 文字居中 */
+        }
 
-		button {
-			background-color: #FFB74D; /* 橙黃色按鈕 */
-			color: white;
-			border: none;
-			border-radius: 5px;
-			padding: 10px 20px;
-			font-size: 16px;
-			cursor: pointer;
-			transition: background-color 0.3s;
-		}
+        /* 按鈕樣式 - 顏色保留 */
+        button {
+            background-color: #FFB74D; /* 橙黃色按鈕 */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
 
-		button:hover {
-			background-color: #FF9800; /* 按鈕懸停效果 */
-		}
+        button:hover {
+            background-color: #FF9800; /* 按鈕懸停效果 */
+        }
 
-		.info {
-			text-align: left;
-			font-size: 14px;
-			line-height: 1.5;
-			margin-bottom: 16px;
-		}
+        /* 說明資訊樣式 - 完全保留 */
+        .info {
+            text-align: left;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
 
-		.info strong {
-			display: block;
-			margin-bottom: 6px;
-		}
+        .info strong {
+            display: block;
+            margin-bottom: 6px;
+        }
 
-		/* 視覺化條列 */
-		.bars {
-			display: flex;
-			align-items: flex-end;
-			justify-content: center;
-			height: 170px;
-			margin-top: 18px;
-			gap: 6px;
-		}
+        /* 視覺化條列 - 完全保留 */
+        .bars {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            height: 170px;
+            margin-top: 18px;
+            gap: 6px;
+        }
 
-		.bar {
-			width: 22px;
-			background-color: #FFB74D;
-			border-radius: 6px 6px 0 0;
-			position: relative;
-			transition: background-color 0.2s, height 0.2s;
-		}
+        .bar {
+            width: 22px;
+            background-color: #FFB74D; /* 顏色保留 */
+            border-radius: 6px 6px 0 0;
+            position: relative;
+            transition: background-color 0.2s, height 0.2s;
+        }
 
-		.bar span {
-			position: absolute;
-			bottom: -20px;
-			width: 100%;
-			font-size: 12px;
-			text-align: center;
-			color: #5D4037;
-		}
+        .bar span {
+            position: absolute;
+            bottom: -20px;
+            width: 100%;
+            font-size: 12px;
+            text-align: center;
+            color: #5D4037;
+        }
 
-		.bar.compare {
-			background-color: #FF7043;
-		}
+        .bar.compare {
+            background-color: #FF7043; /* 顏色保留 */
+        }
 
-		.bar.swap {
-			background-color: #4DB6AC;
-		}
+        .bar.swap {
+            background-color: #4DB6AC; /* 顏色保留 */
+        }
 
-		.bar.sorted {
-			background-color: #A5D6A7;
-		}
+        .bar.sorted {
+            background-color: #A5D6A7; /* 顏色保留 */
+        }
 
-		.step {
-			margin-top: 12px;
-			font-size: 14px;
-			min-height: 28px;
-			color: #5D4037;
-		}
+        /* 步驟、隨機數字、結果樣式 - 完全保留 */
+        .step {
+            margin-top: 12px;
+            font-size: 14px;
+            min-height: 28px;
+            color: #5D4037;
+        }
 
-		.random-numbers {
-			margin-top: 12px;
-			font-size: 16px;
-			font-weight: bold;
-			color: #5D4037;
-		}
+        .random-numbers {
+            margin-top: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #5D4037;
+        }
 
-		/* 結果區域樣式 */
-		.result {
-			margin-top: 20px;
-			font-size: 16px;
-		}
+        .result {
+            margin-top: 20px;
+            font-size: 16px;
+        }
 
-		.result span {
-			font-weight: bold;
-			color: #795548; /* 深棕色 */
-		}
+        .result span {
+            font-weight: bold;
+            color: #795548; /* 深棕色 */
+        }
 
-		/* 返回首頁連結樣式 */
-		.back-link {
-			display: block;
-			margin-top: 20px;
-			text-align: center;
-		}
+        /* 返回首頁連結樣式 - 顏色保留 */
+        .back-link {
+            display: block;
+            margin-top: 20px;
+            text-align: center;
+        }
 
-		.back-link a {
-			color: #FF9800;
-			text-decoration: none;
-			font-size: 14px;
-			transition: color 0.3s;
-		}
+        .back-link a {
+            color: #FF9800;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
 
-		.back-link a:hover {
-			color: #FFB74D;
-			text-decoration: underline;
-		}
-	</style>
+        .back-link a:hover {
+            color: #FFB74D;
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-	<div class="container">
-		<h1>氣泡排序法</h1>
-		<div class="info">
-			<strong>排序規則</strong>
-			從頭到尾掃描陣列，兩兩比較相鄰元素，若前者比後者大則交換，最重的元素會像氣泡一樣往後冒出。
-			<br><br>
-			<strong>示意步驟</strong>
-			1) 從第 1 個元素開始，兩兩比較<br>
-			2) 當前值較大時交換位置<br>
-			3) 每一輪結束時，最大的元素會固定在最末端
-		</div>
+    <div class="container">
+        <h1>氣泡排序法</h1>
+        
+        <div class="info">
+            <strong>排序規則</strong>
+            從頭到尾掃描陣列，兩兩比較相鄰元素，若前者比後者大則交換，最重的元素會像氣泡一樣往後冒出。
+            <br><br>
+            <strong>示意步驟</strong>
+            1) 從第 1 個元素開始，兩兩比較<br>
+            2) 當前值較大時交換位置<br>
+            3) 每一輪結束時，最大的元素會固定在最末端
+        </div>
 
-		<p>選擇要生成幾個數字（1-8）：</p>
-		<input type="number" id="numCount" min="1" max="8" value="8" style="width: 60px; margin-right: 10px;">
-		<button onclick="generateRandomNumbers()">生成隨機數字</button>
+        <p>選擇要生成幾個數字（1-8）：</p>
+        <div style="margin-bottom: 15px;">
+            <input type="number" id="numCount" min="1" max="8" value="8">
+            <button onclick="generateRandomNumbers()">生成隨機數字</button>
+        </div>
 
-		<div class="random-numbers" id="randomNumbers"></div>
+        <div class="random-numbers" id="randomNumbers"></div>
 
-		<div class="bars" id="bars"></div>
-		<div class="step" id="stepInfo"></div>
+        <div class="bars" id="bars"></div>
+        <div class="step" id="stepInfo"></div>
 
-		<div class="result">
-			<p>排序前：<span id="beforeSort"></span></p>
-			<p>排序後：<span id="afterSort"></span></p>
-		</div>
-		<div class="back-link">
-			<a href="index.html">← 返回首頁</a>
-		</div>
-	</div>
+        <div class="result">
+            <p>排序前：<span id="beforeSort"></span></p>
+            <p>排序後：<span id="afterSort"></span></p>
+        </div>
 
-	<script>
-		const ANIMATION_DELAY = 300;
-		let currentNumbers = [];
+        <div class="back-link">
+            <a href="index.html">← 返回首頁</a>
+        </div>
+    </div>
 
-		function generateRandomNumbers() {
-			const count = parseInt(document.getElementById('numCount').value);
-			if (isNaN(count) || count < 1 || count > 8) {
-				alert('請輸入 1 到 8 之間的數字');
-				return;
-			}
-			currentNumbers = [];
-			for (let i = 0; i < count; i++) {
-				currentNumbers.push(Math.floor(Math.random() * 99) + 1); // 1-99
-			}
-			document.getElementById('randomNumbers').textContent = '生成的數字：' + currentNumbers.join(', ');
-			sortNumbers();
-		}
+    <script>
+        const ANIMATION_DELAY = 300;
+        let currentNumbers = [];
 
-		function parseInput() {
-			if (currentNumbers.length === 0) {
-				alert('請先點擊「生成隨機數字」');
-				return null;
-			}
-			return currentNumbers;
-		}
+        function generateRandomNumbers() {
+            const count = parseInt(document.getElementById('numCount').value);
+            if (isNaN(count) || count < 1 || count > 8) {
+                alert('請輸入 1 到 8 之間的數字');
+                return;
+            }
+            currentNumbers = [];
+            for (let i = 0; i < count; i++) {
+                currentNumbers.push(Math.floor(Math.random() * 99) + 1); // 1-99
+            }
+            document.getElementById('randomNumbers').textContent = '生成的數字：' + currentNumbers.join(', ');
+            sortNumbers();
+        }
 
-		function renderBars(array, highlights = {}, sorted = []) {
-			const container = document.getElementById('bars');
-			container.innerHTML = '';
+        function parseInput() {
+            if (currentNumbers.length === 0) {
+                alert('請先點擊「生成隨機數字」');
+                return null;
+            }
+            return currentNumbers;
+        }
 
-			const max = Math.max(...array, 1);
+        function renderBars(array, highlights = {}, sorted = []) {
+            const container = document.getElementById('bars');
+            container.innerHTML = '';
 
-			array.forEach((value, index) => {
-				const bar = document.createElement('div');
-				bar.className = 'bar';
-				bar.style.height = `${(value / max) * 140 + 20}px`;
+            const max = Math.max(...array, 1);
 
-				if (sorted.includes(index)) bar.classList.add('sorted');
-				if (index === highlights.i || index === highlights.j) bar.classList.add('compare');
-				if (index === highlights.swapA || index === highlights.swapB) bar.classList.add('swap');
+            array.forEach((value, index) => {
+                const bar = document.createElement('div');
+                bar.className = 'bar';
+                bar.style.height = `${(value / max) * 140 + 20}px`;
 
-				const label = document.createElement('span');
-				label.textContent = value;
-				bar.appendChild(label);
+                if (sorted.includes(index)) bar.classList.add('sorted');
+                if (index === highlights.i || index === highlights.j) bar.classList.add('compare');
+                if (index === highlights.swapA || index === highlights.swapB) bar.classList.add('swap');
 
-				container.appendChild(bar);
-			});
-		}
+                const label = document.createElement('span');
+                label.textContent = value;
+                bar.appendChild(label);
 
-		function generateBubbleSteps(original) {
-			const a = original.slice();
-			const steps = [];
+                container.appendChild(bar);
+            });
+        }
 
-			const markSorted = n => Array.from({ length: n }, (_, i) => original.length - 1 - i);
+        function generateBubbleSteps(original) {
+            const a = original.slice();
+            const steps = [];
 
-			for (let i = 0; i < a.length - 1; i++) {
-				for (let j = 0; j < a.length - i - 1; j++) {
-					steps.push({
-						arr: a.slice(),
-						highlights: { i: j, j: j + 1 },
-						sorted: markSorted(i),
-						text: `比較第 ${j + 1} 和第 ${j + 2} 個元素：${a[j]} vs ${a[j + 1]}`
-					});
+            const markSorted = n => Array.from({ length: n }, (_, i) => original.length - 1 - i);
 
-					if (a[j] > a[j + 1]) {
-						[a[j], a[j + 1]] = [a[j + 1], a[j]];
-						steps.push({
-							arr: a.slice(),
-							highlights: { swapA: j, swapB: j + 1 },
-							sorted: markSorted(i),
-							text: `交換位置：第 ${j + 1} 和第 ${j + 2} 個元素`
-						});
-					}
-				}
+            for (let i = 0; i < a.length - 1; i++) {
+                for (let j = 0; j < a.length - i - 1; j++) {
+                    steps.push({
+                        arr: a.slice(),
+                        highlights: { i: j, j: j + 1 },
+                        sorted: markSorted(i),
+                        text: `比較第 ${j + 1} 和第 ${j + 2} 個元素：${a[j]} vs ${a[j + 1]}`
+                    });
 
-				steps.push({
-					arr: a.slice(),
-					highlights: {},
-					sorted: markSorted(i + 1),
-					text: `第 ${i + 1} 輪完成，最大的元素已固定在最後面`
-				});
-			}
+                    if (a[j] > a[j + 1]) {
+                        [a[j], a[j + 1]] = [a[j + 1], a[j]];
+                        steps.push({
+                            arr: a.slice(),
+                            highlights: { swapA: j, swapB: j + 1 },
+                            sorted: markSorted(i),
+                            text: `交換位置：第 ${j + 1} 和第 ${j + 2} 個元素`
+                        });
+                    }
+                }
 
-			steps.push({
-				arr: a.slice(),
-				highlights: {},
-				sorted: markSorted(a.length),
-				text: '排序完成！'
-			});
+                steps.push({
+                    arr: a.slice(),
+                    highlights: {},
+                    sorted: markSorted(i + 1),
+                    text: `第 ${i + 1} 輪完成，最大的元素已固定在最後面`
+                });
+            }
 
-			return steps;
-		}
+            steps.push({
+                arr: a.slice(),
+                highlights: {},
+                sorted: markSorted(a.length),
+                text: '排序完成！'
+            });
 
-		function animateSteps(steps) {
-			let idx = 0;
-			const stepInfo = document.getElementById('stepInfo');
+            return steps;
+        }
 
-			function next() {
-				if (idx >= steps.length) return;
-				const step = steps[idx++];
+        function animateSteps(steps) {
+            let idx = 0;
+            const stepInfo = document.getElementById('stepInfo');
 
-				renderBars(step.arr, step.highlights, step.sorted);
-				stepInfo.textContent = step.text;
+            function next() {
+                if (idx >= steps.length) return;
+                const step = steps[idx++];
 
-				if (idx < steps.length) {
-					setTimeout(next, ANIMATION_DELAY);
-				}
-			}
+                renderBars(step.arr, step.highlights, step.sorted);
+                stepInfo.textContent = step.text;
 
-			next();
-		}
+                if (idx < steps.length) {
+                    setTimeout(next, ANIMATION_DELAY);
+                }
+            }
 
-		function sortNumbers() {
-			const nums = parseInput();
-			if (!nums) return;
+            next();
+        }
 
-			document.getElementById('beforeSort').textContent = nums.join(', ');
-			document.getElementById('afterSort').textContent = '';
+        function sortNumbers() {
+            const nums = parseInput();
+            if (!nums) return;
 
-			const steps = generateBubbleSteps(nums);
-			animateSteps(steps);
+            document.getElementById('beforeSort').textContent = nums.join(', ');
+            document.getElementById('afterSort').textContent = '';
 
-			const sorted = nums.slice().sort((a, b) => a - b);
-			setTimeout(() => {
-				document.getElementById('afterSort').textContent = sorted.join(', ');
-			}, ANIMATION_DELAY * (steps.length + 1));
-		}
-	</script>
+            const steps = generateBubbleSteps(nums);
+            animateSteps(steps);
+
+            const sorted = nums.slice().sort((a, b) => a - b);
+            setTimeout(() => {
+                document.getElementById('afterSort').textContent = sorted.join(', ');
+            }, ANIMATION_DELAY * (steps.length + 1));
+        }
+    </script>
 </body>
 </html>
