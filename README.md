@@ -4,7 +4,7 @@
 
 姓名：蔡典儒
 
-模擬頁面 : https://github.com/11428103/sort_report.git  
+模擬頁面 : https://11428103.github.io/sort_report/  
 
 
 # 氣泡排序法
